@@ -4,6 +4,7 @@ import math
 import sys
 import pygame.gfxdraw
 import time
+import os
 # Initialize Pygame
 pygame.init()
 
@@ -20,18 +21,29 @@ SHADOW = (30, 30, 30, 128)  # Semi-transparent shadow
 # Font
 font = pygame.font.Font(None, 24)
 # Load images
-popup_image = pygame.image.load("popup.png")  # Replace with your image path
+
+if hasattr(sys, '_MEIPASS'):
+    # Running from the bundled executable (PyInstaller)
+    base_path = sys._MEIPASS
+else:
+    # Running from the source code (development)
+    base_path = os.path.abspath(".")
+
+# Define the assets path
+assets_path = os.path.join(base_path, ".dist", "assets")
+
+popup_image = pygame.image.load(os.path.join(assets_path, "popup.png"))  # Replace with your image path
 popup_image = pygame.transform.scale(popup_image, (600, 400))  # Adjust the size as needed
 heart_spawned = False
-player_image = pygame.image.load("player.png")
-heart_image = pygame.image.load("love.png")
-music_note_image = pygame.image.load("music.png")
-strength_image = pygame.image.load("strength.png")
-good_element_image = pygame.image.load("good.png")
-evil_image = pygame.image.load("evil.png")
+player_image = pygame.image.load(os.path.join(assets_path, "player.png"))
+heart_image = pygame.image.load(os.path.join(assets_path, "love.png"))
+music_note_image = pygame.image.load(os.path.join(assets_path, "music.png"))
+strength_image = pygame.image.load(os.path.join(assets_path, "strength.png"))
+good_element_image = pygame.image.load(os.path.join(assets_path, "good.png"))
+evil_image = pygame.image.load(os.path.join(assets_path, "evil.png"))
 
 # Intro and end screen images
-intro_image = pygame.image.load(".dist/assets/1.png")
+intro_image = pygame.image.load(os.path.join(assets_path, "1.png"))
 # Colors
 GREEN = (0, 255, 0)
 ORANGE = (255, 165, 0)
@@ -43,7 +55,7 @@ SEMI_TRANSPARENT_BLACK = (0, 0, 0, 150)
 title_font = pygame.font.SysFont(None, 25, bold=True)
 
 # Load your custom icon image
-icon = pygame.image.load("grape.png")  # Replace with your image path
+icon = pygame.image.load(os.path.join(assets_path, "grape.png"))  # Replace with your image path
 
 # Set the window icon to your custom image
 pygame.display.set_icon(icon)
@@ -55,10 +67,10 @@ center = (SCREEN_WIDTH - 690, SCREEN_HEIGHT - 20)
 radius = 60
 
 def draw_gauge(screen, value, min_value, max_value, center, radius):
-    rect_width, rect_height = 210, 130  # Width and height of the rectangle
-    rect_x = 7  # Bottom-left corner starts at x = 0
-    rect_y = SCREEN_HEIGHT - rect_height - 5
-    pygame.draw.rect(screen, (60, 60, 60), (rect_x, rect_y, rect_width, rect_height))
+    # rect_width, rect_height = 210, 130  # Width and height of the rectangle
+    # rect_x = 7  # Bottom-left corner starts at x = 0
+    # rect_y = SCREEN_HEIGHT - rect_height - 5
+    # pygame.draw.rect(screen, (60, 60, 60), (rect_x, rect_y, rect_width, rect_height))
 
 
     # Normalize value to -1 to 1 range
@@ -103,20 +115,20 @@ def draw_gauge(screen, value, min_value, max_value, center, radius):
 
 # Load images and store in a list
 og_images = [
-    pygame.image.load(".dist/assets/2.png"),  # Image 1
-    pygame.image.load(".dist/assets/3.png"),  # Image 2
-    pygame.image.load(".dist/assets/4.png"),  # Image 3
-    pygame.image.load(".dist/assets/5.png"),  # Image 4
-    pygame.image.load(".dist/assets/6.png"),  # Image 4
-    pygame.image.load(".dist/assets/howtoplay.png")   # Image 4
+    pygame.image.load(os.path.join(assets_path, "2.png")),  # Image 1
+    pygame.image.load(os.path.join(assets_path, "3.png")),  # Image 2
+    pygame.image.load(os.path.join(assets_path, "4.png")),  # Image 3
+    pygame.image.load(os.path.join(assets_path, "5.png")),  # Image 4
+    pygame.image.load(os.path.join(assets_path, "6.png")),  # Image 4
+    pygame.image.load(os.path.join(assets_path, "howtoplay.png"))   # Image 4
 ]
 
 end_images = [
-    pygame.image.load(".dist/assets/10.png"),  # Image 1
-    pygame.image.load(".dist/assets/11.png"),  # Image 2
-    pygame.image.load(".dist/assets/12.png"),  # Image 3
-    pygame.image.load(".dist/assets/13.png"),  # Image 4
-    pygame.image.load(".dist/assets/14.png")   # Image 4 
+    pygame.image.load(os.path.join(assets_path, "10.png")),  # Image 1
+    pygame.image.load(os.path.join(assets_path, "11.png")),  # Image 2
+    pygame.image.load(os.path.join(assets_path, "12.png")),  # Image 3
+    pygame.image.load(os.path.join(assets_path, "13.png")),  # Image 4
+    pygame.image.load(os.path.join(assets_path, "14.png"))   # Image 4 
 ]
 
 # Scale images to fit screen (optional)
@@ -243,7 +255,7 @@ evil_size = 40
 evil_image = pygame.transform.scale(evil_image, (evil_size, evil_size+20))
 
 # Game setup
-background_image = pygame.image.load(".dist/assets/9.png")
+background_image = pygame.image.load(os.path.join(assets_path, "9.png"))
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -252,7 +264,7 @@ clock = pygame.time.Clock()
 
 # Player setup
 player_pos = [SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2]
-player_speed = 3
+player_speed = 5
 
 # Initialize game variables
 hearts_collected = 0
@@ -381,14 +393,14 @@ def end_game():
     print("Game ended!")
     stop_music()  # Stop current music
     pygame.mixer.music.set_volume(0.8)  # Set volume to 50% (default is 1.0)
-    play_music("endmusic.mp3")  # Play the new music after game ends
+    play_music(os.path.join(assets_path, "endmusic.mp3")) # Play the new music after game ends
 
 def show_scores():
     # Clear the screen
     screen.fill(WHITE)
 
     # Load scoreboard image (ensure the path is correct)
-    scoreboard_image = pygame.image.load(".dist/assets/scoreboard.png")
+    scoreboard_image = pygame.image.load(os.path.join(assets_path, "scoreboard.png"))
 
     # Display the scoreboard image
     screen.blit(scoreboard_image, (0, 0))  # Position it as needed on the screen
@@ -519,7 +531,7 @@ def main():
 
     # Load the music file
     
-    pygame.mixer.music.load('.dist/assets/bananashake.mp3')
+    pygame.mixer.music.load(os.path.join(assets_path, "bananashake.mp3"))
 
     # Play the music (loop=True will loop the music indefinitely)
     pygame.mixer.music.play(-1, 0.0)  # Loop music indefinitely, starting from the beginning
@@ -556,6 +568,7 @@ def main():
 
         # Blit the dimming overlay on top of the background
         screen.blit(dim_surface, (0, 0))
+        
         # Check if game time has expired
         if current_time - start_time >= game_duration:
             running = False
@@ -569,7 +582,8 @@ def main():
 
         # Draw the dynamic colorful background if music is above 0.2
         draw_dynamic_background()
-
+        draw_volume_meter()
+        draw_gauge(screen, societal_value, min_value, max_value, center, radius)
 
         
 
@@ -587,7 +601,7 @@ def main():
 
         # Call the draw_scoreboard function to display the scoreboard
         # draw_scoreboard()
-        draw_volume_meter()
+        
         # Move and draw objects
         for obj in objects:
             obj.move()
@@ -619,7 +633,7 @@ def main():
                     evil_score += 1
                 obj.collected = True
                 
-        draw_gauge(screen, societal_value, min_value, max_value, center, radius)
+        
         # Player movement
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
