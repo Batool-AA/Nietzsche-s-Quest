@@ -51,10 +51,16 @@ pygame.display.set_icon(icon)
 # Gauge properties
 min_value = -100
 max_value = 100
-center = (SCREEN_WIDTH - 700, SCREEN_HEIGHT - 20)
+center = (SCREEN_WIDTH - 690, SCREEN_HEIGHT - 20)
 radius = 60
 
 def draw_gauge(screen, value, min_value, max_value, center, radius):
+    rect_width, rect_height = 210, 130  # Width and height of the rectangle
+    rect_x = 7  # Bottom-left corner starts at x = 0
+    rect_y = SCREEN_HEIGHT - rect_height - 5
+    pygame.draw.rect(screen, (60, 60, 60), (rect_x, rect_y, rect_width, rect_height))
+
+
     # Normalize value to -1 to 1 range
     normalized_value = (value - min_value) / (max_value - min_value) * 2 - 1
     normalized_value = max(-1, min(1, normalized_value))  # Clamp between -1 and 1
@@ -86,12 +92,12 @@ def draw_gauge(screen, value, min_value, max_value, center, radius):
 
     # Draw labels
     good_label = font.render("Good", True, GREEN)
-    bad_label = font.render("Bad", True, RED)
+    bad_label = font.render("Evil", True, RED)
     screen.blit(good_label, (center[0] + radius - 10, center[1] - radius - 15))  # Good label at the green end
     screen.blit(bad_label, (center[0] - radius - 30, center[1] - radius - 15))  # Bad label at the red end
 
    # Draw title "Your Score" inside the gauge
-    title_text = title_font.render("Your Score", True, WHITE)
+    title_text = title_font.render("Societal Value", True, WHITE)
     screen.blit(title_text, (center[0] - title_text.get_width() // 2, center[1] - radius - 40))
 
 
@@ -101,6 +107,7 @@ og_images = [
     pygame.image.load(".dist/assets/3.png"),  # Image 2
     pygame.image.load(".dist/assets/4.png"),  # Image 3
     pygame.image.load(".dist/assets/5.png"),  # Image 4
+    pygame.image.load(".dist/assets/6.png"),  # Image 4
     pygame.image.load(".dist/assets/howtoplay.png")   # Image 4
 ]
 
@@ -393,9 +400,9 @@ def show_scores():
     # Create the result text with the final scores, splitting the text into multiple lines
     result_lines = [
         f"Hearts: {hearts_collected}",
-        f"Music Meter: {music_meter}",
-        f"Societal Value: {societal_value}",
-        f"Evil Score: {evil_score}"
+        # f"Music Meter: {music_meter}",
+        f"Societal Value: {societal_value}"
+        # f"Evil Score: {evil_score}"
     ]
 
     # Calculate the height of the text block
@@ -432,7 +439,7 @@ def show_end():
     # After all images, show final score text
     font = pygame.font.SysFont(None, 36)
     result_text = font.render(
-        f"Final Score - Hearts: {hearts_collected}, Music Meter: {music_meter}, Societal Value: {societal_value}, Evil Score: {evil_score}",
+        f"Final Score - Hearts: {hearts_collected}, Societal Value: {societal_value}",
         True, BLACK
     )
     screen.blit(result_text, (50, SCREEN_HEIGHT - 50))
@@ -461,9 +468,9 @@ def draw_scoreboard():
     text_y_offset = scoreboard_y + scoreboard_padding
     scoreboard_texts = [
         f"Hearts: {hearts_collected}",
-        f"Music Meter: {music_meter}",
-        f"Societal Value: {societal_value}",
-        f"Evil Score: {evil_score}"
+        # f"Music Meter: {music_meter}",
+        f"Societal Value: {societal_value}"
+        # f"Evil Score: {evil_score}"
     ]
 
     for text in scoreboard_texts:
@@ -564,26 +571,10 @@ def main():
         draw_dynamic_background()
 
 
-        # Player movement
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            player_pos[0] -= player_speed
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            player_pos[0] += player_speed
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            player_pos[1] -= player_speed
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            player_pos[1] += player_speed
-
-        # Keep the player within screen boundaries
-        player_pos[0] = max(0, min(SCREEN_WIDTH - player_size, player_pos[0]))
-        player_pos[1] = max(0, min(SCREEN_HEIGHT - player_size, player_pos[1]))
-
-        # Draw player
-        screen.blit(player_image, (player_pos[0], player_pos[1]))
+        
 
         # Spawn objects at random intervals
-        if current_time - last_spawn_time > random.randint(3000, 7000):
+        if current_time - last_spawn_time > random.randint(1000, 5000):
             spawn_object()
             last_spawn_time = current_time
 
@@ -612,15 +603,15 @@ def main():
                 if obj.type == "heart":
                     hearts_collected += 1
                     show_popup = True
-                    
+                    heart_spawned = False
                 elif obj.type == "music_note":
                     music_meter += 5
                     # heart_size += 5
                 elif obj.type == "strength":
-                    player_speed = 2
+                    player_speed += 2
                     screen_shake_with_errors(duration=2000, intensity=10)  # Shake the screen for 2 seconds
-                    if player_speed <= 9:
-                        player_speed += 2
+                    # if player_speed <= 9:
+                    #     player_speed += 2
                 elif obj.type == "good_element":
                     societal_value += 10
                 elif obj.type == "evil":
@@ -629,6 +620,23 @@ def main():
                 obj.collected = True
                 
         draw_gauge(screen, societal_value, min_value, max_value, center, radius)
+        # Player movement
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            player_pos[0] -= player_speed
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            player_pos[0] += player_speed
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            player_pos[1] -= player_speed
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            player_pos[1] += player_speed
+
+        # Keep the player within screen boundaries
+        player_pos[0] = max(0, min(SCREEN_WIDTH - player_size, player_pos[0]))
+        player_pos[1] = max(0, min(SCREEN_HEIGHT - player_size, player_pos[1]))
+
+        # Draw player
+        screen.blit(player_image, (player_pos[0], player_pos[1]))
 
         # Update HUD
         font = pygame.font.SysFont(None, 24)
