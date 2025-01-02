@@ -3,5 +3,6 @@ This repository contains a creative project done for the course Introduction to 
 - What is done for love always occurs beyond good and evil
 - Without music, life would be a mistake
 - That which does not kill us, makes us stronger
-The repository contains a document named Theme Exploration PDF which describes how each theme is explored and connected within the game.
+
+``Creative Project.pdf`` describes how each theme is explored and connected within the game.
 
